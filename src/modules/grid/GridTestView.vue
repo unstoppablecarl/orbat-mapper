@@ -11,11 +11,11 @@ const data = ref<NUnit[]>([]);
 type test = keyof NUnit;
 
 const columns = ref<ColumnProperties<NUnit>[]>([
-  { field: "id", label: "", type: "dots", width: 60 },
   { field: "sidc", label: "Icon", type: "sidc", width: 65 },
-  { field: "shortName", label: "Short name" },
-  { field: "sidc", label: "Symbol", id: "sdfsd" },
   { field: "name", label: "Name" },
+  { field: "shortName", label: "Short name" },
+  { field: "externalUrl", label: "URL" },
+  { field: "id", label: "URL" },
 ]);
 const { scenario, isReady } = useScenario();
 
