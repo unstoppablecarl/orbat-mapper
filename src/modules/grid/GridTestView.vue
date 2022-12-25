@@ -5,6 +5,7 @@ import { ColumnProperties } from "@/modules/grid/gridTypes";
 import { NUnit } from "@/types/internalModels";
 import { onMounted, ref } from "vue";
 import { useScenario } from "@/scenariostore";
+import TestVirtualList from "@/modules/grid/TestVirtualList.vue";
 
 const data = ref<NUnit[]>([]);
 
@@ -25,9 +26,11 @@ onMounted(async () => {
 });
 </script>
 <template>
-  <main class="h-full py-2 sm:px-4">
-    <section class="h-full w-full">
-      <OrbatGrid :data="data" :columns="columns" />
-    </section>
+  <main class="h-full">
+    <TestVirtualList />
+    <!--    <section class="h-full w-full">-->
+    <!--      &lt;!&ndash;      <OrbatGrid :data="data" :columns="columns" />&ndash;&gt;-->
+    <!--      -->
+    <!--    </section>-->
   </main>
 </template>
