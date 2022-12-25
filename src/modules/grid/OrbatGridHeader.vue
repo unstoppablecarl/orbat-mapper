@@ -1,5 +1,5 @@
 <template>
-  <header class="flex-shrink-0 bg-gray-50">
+  <header class="sticky top-0 border-b bg-gray-100">
     <div class="flex divide-x divide-gray-200">
       <div
         v-for="column in columnDefs"
@@ -19,7 +19,7 @@ import { RuntimeColumnProperties } from "@/modules/grid/gridTypes";
 
 interface Props {
   columnDefs: RuntimeColumnProperties[];
-  rowHeight?: string;
+  rowHeight?: number;
 }
 
 const props = defineProps<Props>();
