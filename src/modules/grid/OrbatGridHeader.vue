@@ -1,11 +1,11 @@
 <template>
-  <header class="sticky top-0 border-b bg-gray-100">
+  <header class="sticky top-0">
     <div class="flex divide-x divide-gray-200">
       <div
         v-for="column in columnDefs"
         :key="column.id"
         :style="{ width: column.width + 'px', minWidth: column.width + 'px' }"
-        class="flex-0 flex w-full overflow-hidden px-4 py-3.5 text-left text-sm font-semibold text-gray-900"
+        class="flex-0 flex w-full overflow-hidden border-b bg-gray-100 px-4 py-3.5 text-left text-sm font-semibold text-gray-900"
       >
         <span class="truncate">{{ column.label }}</span>
       </div>

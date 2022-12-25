@@ -20,14 +20,11 @@
 </template>
 
 <script setup lang="ts">
-//@ts-ignore
-import { RecycleScroller } from "vue-virtual-scroller";
 import { RuntimeColumnProperties } from "@/modules/grid/gridTypes";
 import DotsMenu from "@/components/DotsMenu.vue";
 import { MenuItemData } from "@/components/types";
 import { SideAction, SideActions } from "@/types/constants";
 import MilSymbol from "@/components/MilSymbol.vue";
-import OrbatGridHeader from "@/modules/grid/OrbatGridHeader.vue";
 
 interface Props {
   columnDefs: RuntimeColumnProperties[];

@@ -18,7 +18,7 @@ const columnDefs = computed((): RuntimeColumnProperties[] =>
     ...column,
     label: column.label || column.field,
     id: column.id || nanoid(),
-    width: column.width || 200,
+    width: column.width || 300,
     type: column.type || "text",
   }))
 );
@@ -27,17 +27,13 @@ const dd = computed(() => props.data);
 
 const { list, containerProps, wrapperProps, scrollTo } = useVirtualList(dd, {
   itemHeight: props.rowHeight,
-  // overscan: 50,
+  overscan: 10,
 });
 </script>
 
 <template>
-  <div v-bind="containerProps" class="h-full rounded-lg border shadow">
-    <OrbatGridHeader
-      :column-defs="columnDefs"
-      :row-height="rowHeight"
-      class="inline-block"
-    />
+  <div v-bind="containerProps" class="relative h-full rounded-lg border shadow">
+    <OrbatGridHeader :column-defs="columnDefs" :row-height="rowHeight" class="" />
     <div v-bind="wrapperProps">
       <template v-for="{ index, data: test } in list" :key="index">
         <OrbatGridRow
@@ -52,5 +48,3 @@ const { list, containerProps, wrapperProps, scrollTo } = useVirtualList(dd, {
     </div>
   </div>
 </template>
-
-<style></style>

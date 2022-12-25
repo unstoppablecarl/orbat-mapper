@@ -11,11 +11,11 @@ const data = ref<NUnit[]>([]);
 type test = keyof NUnit;
 
 const columns = ref<ColumnProperties<NUnit>[]>([
+  { field: "id", label: "menu", type: "dots", width: 60 },
   { field: "sidc", label: "Icon", type: "sidc", width: 65 },
   { field: "name", label: "Name" },
   { field: "shortName", label: "Short name" },
   { field: "externalUrl", label: "URL" },
-  { field: "id", label: "menu", type: "dots" },
 ]);
 const { scenario, isReady } = useScenario();
 
@@ -25,8 +25,8 @@ onMounted(async () => {
 });
 </script>
 <template>
-  <main class="h-full">
-    <section class="h-full sm:p-10">
+  <main class="h-full sm:p-10">
+    <section class="h-full">
       <OrbatGrid :data="data" :columns="columns" />
     </section>
   </main>
