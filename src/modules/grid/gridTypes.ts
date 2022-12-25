@@ -1,3 +1,5 @@
+import { MenuItemData } from "@/components/types";
+
 export type CellType = "text" | "number" | "sidc" | "dots";
 
 export interface ColumnProperties<TData = Record<string, any>> {
@@ -6,6 +8,7 @@ export interface ColumnProperties<TData = Record<string, any>> {
   label?: string;
   width?: number;
   type?: CellType;
+  menu?: MenuItemData[];
 }
 
 export interface RuntimeColumnProperties extends Required<ColumnProperties> {}

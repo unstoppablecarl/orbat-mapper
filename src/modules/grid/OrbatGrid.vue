@@ -12,7 +12,7 @@ interface Props {
   rowHeight?: number;
 }
 const props = withDefaults(defineProps<Props>(), { rowHeight: 48 });
-
+const emit = defineEmits(["action"]);
 const columnDefs = computed((): RuntimeColumnProperties[] =>
   props.columns.map((column) => ({
     ...column,
@@ -20,6 +20,7 @@ const columnDefs = computed((): RuntimeColumnProperties[] =>
     id: column.id || nanoid(),
     width: column.width || 300,
     type: column.type || "text",
+    menu: column.menu || [],
   }))
 );
 
@@ -35,14 +36,15 @@ const { list, containerProps, wrapperProps, scrollTo } = useVirtualList(dd, {
   <div v-bind="containerProps" class="relative h-full rounded-lg border shadow">
     <OrbatGridHeader :column-defs="columnDefs" :row-height="rowHeight" class="" />
     <div v-bind="wrapperProps">
-      <template v-for="{ index, data: test } in list" :key="index">
+      <template v-for="{ index, data: item } in list" :key="index">
         <OrbatGridRow
-          :data="test"
+          :data="item"
           :column-defs="columnDefs"
           :style="{
             height: `${rowHeight}px`,
           }"
           class=""
+          @action="emit('action', $event, { data: item, index })"
         />
       </template>
     </div>
