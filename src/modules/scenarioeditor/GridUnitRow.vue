@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ChevronRightIcon } from "@heroicons/vue/20/solid";
-import type { TableColumn } from "@/modules/scenarioeditor/types";
+import type { TableColumn, TableColumnWidth } from "@/modules/scenarioeditor/types";
 import type { NUnit } from "@/types/internalModels";
 import MilSymbol from "@/components/MilSymbol.vue";
 import GridEditableCell from "@/modules/scenarioeditor/GridEditableCell.vue";
@@ -10,6 +10,7 @@ interface Props {
   itemIndex: number;
   level: number;
   columns: TableColumn[];
+  widths: TableColumnWidth;
   isActive: boolean;
 }
 
@@ -28,11 +29,15 @@ function toggleOpen() {
 }
 </script>
 <template>
-  <tr :id="`item-${unit.id}`" class="divide-x divide-gray-200 hover:bg-gray-100">
-    <td class="relative">
+  <div
+    role="row"
+    :id="`item-${unit.id}`"
+    class="flex divide-x divide-gray-200 hover:bg-gray-100"
+  >
+    <div class="relative" role="gridcell">
       <div v-if="isActive" class="absolute inset-y-0 right-0 w-0.5 bg-indigo-600"></div>
-    </td>
-    <td>
+    </div>
+    <div class="" role="gridcell" style="width: 100px">
       <div
         :id="`cell-${itemIndex}-0`"
         class="flex items-center whitespace-nowrap border-2 border-white py-3 text-sm text-gray-900 outline-0 focus-within:border-red-800"
@@ -56,8 +61,14 @@ function toggleOpen() {
         />
         <button class="ml-2 truncate hover:underline">{{ unit.name }}</button>
       </div>
-    </td>
-    <td v-for="(column, colIndex) in columns" :key="column.value" class="">
+    </div>
+    <div
+      v-for="(column, colIndex) in columns"
+      role="gridcell"
+      :key="column.value"
+      class="dummy"
+      :style="{ width: widths[column.label] }"
+    >
       <GridEditableCell
         :value="unit[column.value]"
         :row-index="itemIndex"
@@ -69,6 +80,6 @@ function toggleOpen() {
         @edit="emit('edit', unit, column.value, $event)"
       >
       </GridEditableCell>
-    </td>
-  </tr>
+    </div>
+  </div>
 </template>

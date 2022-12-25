@@ -35,4 +35,7 @@ export type CellType = "text" | "sidc" | "markdown";
 export interface TableColumn extends SelectItem<ColumnField> {
   type: CellType;
   hidden?: boolean;
+  width?: string;
 }
+
+export type TableColumnWidth = Record<string, string>;

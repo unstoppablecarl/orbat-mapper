@@ -1,48 +1,45 @@
 <script setup lang="ts">
-import { TableColumn } from "@/modules/scenarioeditor/types";
+import { TableColumn, TableColumnWidth } from "@/modules/scenarioeditor/types";
+import { onMounted, ref } from "vue";
+import { useVModel } from "@vueuse/core";
 
 interface Props {
   columns: TableColumn[];
+  modelValue: TableColumnWidth;
 }
 
 const props = defineProps<Props>();
+const emit = defineEmits(["update:modelValue"]);
+
+const widths = useVModel(props, "modelValue", emit);
+
+function createInitialWidths(cols: TableColumn[]) {
+  return Object.fromEntries(cols.map((c) => [c.label, c.width || "333px"]));
+}
+widths.value = createInitialWidths(props.columns);
+
+const rowHeight = ref("40px");
 </script>
 <template>
-  <colgroup>
-    <col class="w-10" />
-    <col />
-    <col />
-    <col class="w-1/4" />
-  </colgroup>
-  <thead class="bg-gray-500">
-    <tr>
-      <th scope="col" class="sticky top-0 z-10">
-        <div
-          class="-m-[1.5px] border-b border-gray-400 bg-gray-100 py-3.5 pl-6 pr-3 text-left text-sm font-semibold text-gray-900"
-        >
-          &nbsp;
-        </div>
-      </th>
-      <th scope="col" class="sticky top-0 z-10">
-        <div
-          class="-m-[1.5px] border-b border-gray-400 bg-gray-100 py-3.5 pl-6 pr-3 text-left text-sm font-semibold text-gray-900"
-        >
-          Unit
-        </div>
-      </th>
-
-      <th
+  <header class="sticky top-0 z-10 flex w-full bg-gray-500">
+    <div role="row" class="flex w-full divide-x-2 divide-red-500">
+      <div role="columnheader" class="inline-block" :style="{ height: rowHeight }">
+        &nbsp;
+      </div>
+      <div role="columnheader" class="flex items-center">
+        <div class="">Unit</div>
+      </div>
+      <div
+        role="columnheader"
         v-for="column in columns"
         :key="column.value"
-        scope="col"
-        class="sticky top-0 z-10"
+        class="flex items-center"
+        :style="{ width: widths[column.label] }"
       >
-        <div
-          class="-my-[2px] -ml-[2px] border-b border-l border-gray-400 border-l-gray-200 bg-gray-100 py-3.5 pl-3 pr-3 text-left text-sm font-semibold text-gray-900"
-        >
+        <div class="cursor-pointer" @click="widths[column.label] = '100px'">
           {{ column.label }}
         </div>
-      </th>
-    </tr>
-  </thead>
+      </div>
+    </div>
+  </header>
 </template>

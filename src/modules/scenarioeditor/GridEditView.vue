@@ -32,8 +32,9 @@
         >
       </header>
       <div class="relative min-w-0 max-w-none flex-auto overflow-auto pb-7">
-        <table class="w-full table-fixed">
-          <GridHeader :columns="columns" />
+        {{ columnWidths }}
+        <div class="w-full" role="treegrid">
+          <GridHeader :columns="columns" v-model="columnWidths" />
           <tbody class="divide-y divide-gray-200 bg-white">
             <template v-for="(item, itemIndex) in items" :key="item.id">
               <GridUnitRow
@@ -47,6 +48,7 @@
                 @active-item="onActiveItem(item, $event)"
                 :is-active="activeItem?.id === item.id"
                 @edit="onUnitEdit"
+                :widths="columnWidths"
               />
               <GridSideRow
                 v-else-if="item.type === 'side'"
@@ -75,7 +77,7 @@
               />
             </template>
           </tbody>
-        </table>
+        </div>
       </div>
       <footer class="h-12 flex-shrink-0 border-t border-gray-300 bg-gray-200"></footer>
     </div>
@@ -119,6 +121,7 @@ const {
   unitActions,
 } = activeScenario;
 
+const columnWidths = ref<Record<string, string>>({});
 const availableColumns: TableColumn[] = [
   { value: "name", label: "Name", type: "text" },
   { value: "shortName", label: "Short name", type: "text" },
