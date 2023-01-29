@@ -1,4 +1,4 @@
-export type ExportFormat = "geojson" | "kml" | "kmz" | "msdl" | "xlsx";
+export type ExportFormat = "geojson" | "kml" | "kmz" | "msdl" | "xlsx" | "csv";
 export type ImportFormat = "geojson" | "milx" | "msdl";
 export type GuessedImportFormat = "unknown" | ImportFormat;
 
@@ -12,7 +12,11 @@ export interface XlsxSettings {
   columns: ColumnMapping[];
 }
 
-export interface ExportSettings extends XlsxSettings {
+export interface CsvSettings {
+  columns: ColumnMapping[];
+}
+
+export interface ExportSettings extends XlsxSettings, CsvSettings {
   fileName: string;
   includeUnits: boolean;
   includeFeatures: boolean;

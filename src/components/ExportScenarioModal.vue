@@ -17,6 +17,7 @@
         </p>
       </div>
       <ExportSettingsXlsx v-if="format === 'xlsx'" :format="format" v-model="form" />
+      <ExportSettingsCsv v-else-if="format === 'csv'" :format="format" v-model="form" />
       <template v-else>
         <fieldset class="space-y-4">
           <InputCheckbox
@@ -72,6 +73,7 @@ import NProgress from "nprogress";
 import { useRouter } from "vue-router";
 import { useVModel } from "@vueuse/core";
 import ExportSettingsXlsx from "@/components/ExportSettingsXlsx.vue";
+import ExportSettingsCsv from "@/components/ExportSettingsCsv.vue";
 
 const router = useRouter();
 
@@ -85,6 +87,7 @@ const formatItems: SelectItem<ExportFormat>[] = [
   { label: "KML", value: "kml" },
   { label: "KMZ", value: "kmz" },
   { label: "XLSX", value: "xlsx" },
+  { label: "CSV", value: "csv" },
 ];
 
 interface Form extends ExportSettings {
@@ -121,6 +124,8 @@ async function onExport(e: Event) {
     await downloadAsKMZ(form.value);
   } else if (format === "xlsx") {
     await downloadAsXlsx(form.value);
+  } else if (format === "csv") {
+    // await downloadAsCsv(form.value);
   }
   NProgress.done();
   open.value = false;
