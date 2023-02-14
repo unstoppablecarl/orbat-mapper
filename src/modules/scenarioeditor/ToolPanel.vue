@@ -1,10 +1,4 @@
 <script setup lang="ts">
-import {
-  LockOpenVariantOutline,
-  LockOutline,
-  MapMarkerPath,
-  VectorPolylineEdit,
-} from "mdue";
 import FloatingPanel from "@/components/FloatingPanel.vue";
 import PanelSection from "@/components/PanelSection.vue";
 import MilSymbol from "@/components/MilSymbol.vue";
@@ -107,8 +101,8 @@ onGetLocation((location) => {
           @click="toggleAddMultiple()"
           title="Lock tool selection"
         >
-          <LockOutline v-if="addMultiple" class="h-5 w-5" />
-          <LockOpenVariantOutline v-else class="h-5 w-5" /></button
+          <IconMdiLockOutline v-if="addMultiple" class="h-5 w-5" />
+          <IconMdiLockOpenVariantOutline v-else class="h-5 w-5" /></button
       ></PanelSection>
       <PanelSection label="Add unit">
         <div class="mt-1 grid grid-cols-2 gap-2">
@@ -134,7 +128,7 @@ onGetLocation((location) => {
             title="Show unit track on map"
             :active="unitSettings.showHistory"
           >
-            <MapMarkerPath class="h-5 w-5" aria-hidden="true" />
+            <IconMdiMapMarkerPath class="h-5 w-5" aria-hidden="true" />
           </ToolbarButton>
           <ToolbarButton
             @click="unitSettings.editHistory = !unitSettings.editHistory"
@@ -143,7 +137,7 @@ onGetLocation((location) => {
             :active="unitSettings.editHistory"
             :disabled="!unitSettings.showHistory"
           >
-            <VectorPolylineEdit class="h-5 w-5" aria-hidden="true" />
+            <IconMdiVectorPolylineEdit class="h-5 w-5" aria-hidden="true" />
           </ToolbarButton>
         </div>
       </PanelSection>
