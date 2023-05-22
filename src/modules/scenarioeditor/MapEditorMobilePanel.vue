@@ -47,7 +47,7 @@
         </div>
         <CloseButton @click="toggleBottomPanel()" class="px-4" />
       </TabList>
-      <TabPanels class="flex-auto overflow-y-auto">
+      <TabPanels class="flex-auto overflow-y-auto" ref="swipeLeftRightEl">
         <TabPanel :unmount="false" class="pb-10">
           <OrbatPanel />
         </TabPanel>
@@ -79,8 +79,8 @@ import OrbatPanel from "@/modules/scenarioeditor/OrbatPanel.vue";
 import CloseButton from "@/components/CloseButton.vue";
 import IconButton from "@/components/IconButton.vue";
 import { ref, watch } from "vue";
-import { useSwipe, useToggle } from "@vueuse/core";
-import { useSelectedFeatures, useSelectedUnits } from "@/stores/dragStore";
+import { usePointerSwipe, useSwipe, useToggle } from "@vueuse/core";
+import { useDragStore, useSelectedFeatures, useSelectedUnits } from "@/stores/dragStore";
 import { injectStrict } from "@/utils";
 import { activeUnitKey } from "@/components/injects";
 import MapTimeController from "@/components/MapTimeController.vue";
@@ -93,6 +93,7 @@ const emit = defineEmits(["open-time-modal", "inc-day", "dec-day"]);
 const activeUnitId = injectStrict(activeUnitKey);
 const { selectedFeatureIds } = useSelectedFeatures();
 const { selectedUnitIds } = useSelectedUnits();
+const dragStore = useDragStore();
 const { mobilePanelOpen: showBottomPanel } = storeToRefs(useUiStore());
 
 const toggleBottomPanel = useToggle(showBottomPanel);
@@ -105,9 +106,12 @@ function changeTab(index: number) {
 
 const swipeUpEl = ref<HTMLElement | null>(null);
 const swipeDownEl = ref<HTMLElement | null>(null);
+const swipeLeftRightEl = ref<HTMLElement | null>(null);
 
-const { isSwiping, direction } = useSwipe(swipeUpEl);
+const { isSwiping, direction } = usePointerSwipe(swipeUpEl);
 const { isSwiping: isSwipingDown, direction: downDirection } = useSwipe(swipeDownEl);
+const { isSwiping: isSwipingLeftRight, direction: leftRightDirection } =
+  useSwipe(swipeLeftRightEl);
 
 watch(isSwiping, (swiping) => {
   if (swiping && direction.value === "up") {
@@ -118,6 +122,17 @@ watch(isSwiping, (swiping) => {
 watch(isSwipingDown, (swiping) => {
   if (swiping && downDirection.value === "down") {
     showBottomPanel.value = false;
+  }
+});
+
+watch(isSwipingLeftRight, (swiping) => {
+  if (dragStore.draggedUnit) return;
+  if (swiping && leftRightDirection.value === "left") {
+    activeTabIndex.value += 1;
+  }
+
+  if (swiping && leftRightDirection.value === "right") {
+    activeTabIndex.value -= 1;
   }
 });
 </script>
