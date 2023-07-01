@@ -26,6 +26,7 @@ import { useSelectedItems } from "@/stores/selectedStore";
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/vue";
 import ImageMapLayerSettings from "@/modules/scenarioeditor/ImageMapLayerSettings.vue";
 import TileJSONMapLayerSettings from "@/modules/scenarioeditor/TileMapLayerSettings.vue";
+import { LayerUpdateOptions } from "@/composables/geoMapLayers";
 
 interface Props {
   layerId: FeatureId;
@@ -80,12 +81,7 @@ const debouncedUpdate = useDebounceFn((data: ScenarioMapLayerUpdate) => {
   geo.updateMapLayer(props.layerId, data, { noEmit: true });
 }, 500);
 
-interface UpdateOptions {
-  debounce?: boolean;
-  undoable?: boolean;
-}
-
-function updateLayer(data: ScenarioMapLayerUpdate, options: UpdateOptions = {}) {
+function updateLayer(data: ScenarioMapLayerUpdate, options: LayerUpdateOptions = {}) {
   const debounce = options.debounce ?? false;
   const undoable = options.undoable ?? !debounce;
   debounce && debouncedUpdate(data);
