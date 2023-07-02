@@ -62,6 +62,7 @@ const geoStore = useGeoStore();
 const settingsStore = useSettingsStore();
 const symbolSettings = useSymbolSettingsStore();
 const { moveUnitEnabled } = storeToRefs(useUnitSettingsStore());
+const { measurementUnit } = storeToRefs(useMeasurementsStore());
 
 const { unitLayer, drawUnits } = useUnitLayer();
 const { onDrop } = useDrop(mapRef, unitLayer);
@@ -77,12 +78,12 @@ const unitLayerGroup = new LayerGroup({
 unitLayerGroup.set("title", "Units");
 
 const { showHistory, editHistory } = storeToRefs(unitSettingsStore);
-
-const { initializeFromStore: loadMapLayers } = useScenarioMapLayers(olMap);
-const { initializeFromStore: loadScenarioLayers } = useScenarioLayers(olMap);
 const { unitSelectEnabled, featureSelectEnabled, hoverEnabled } = storeToRefs(
   useMapSelectStore()
 );
+
+const { initializeFromStore: loadMapLayers } = useScenarioMapLayers(olMap);
+const { initializeFromStore: loadScenarioLayers } = useScenarioLayers(olMap);
 useGeoLayersUndoRedo(olMap);
 const { historyLayer, drawHistory, historyModify } = useUnitHistory({
   showHistory,
@@ -92,11 +93,6 @@ const r = useMapHover(olMap, { enable: hoverEnabled });
 
 olMap.addLayer(historyLayer);
 olMap.addLayer(unitLayerGroup);
-
-watch([() => state.currentTime, doNotFilterLayers], (v) => {
-  loadScenarioLayers(false, !doNotFilterLayers.value);
-});
-
 olMap.addInteraction(historyModify);
 
 const {
@@ -118,17 +114,19 @@ const { moveInteraction: moveUnitInteraction } = useMoveInteraction(
   unitLayer,
   moveUnitEnabled
 );
+
 useOlEvent(unitLayerGroup.on("change:visible", toggleMoveUnitInteraction));
 olMap.addInteraction(moveUnitInteraction);
 
 const { showLocation, coordinateFormat, showScaleLine } = storeToRefs(
   useMapSettingsStore()
 );
+
 const lc = useShowLocationControl(olMap, {
   coordinateFormat,
   enable: showLocation,
 });
-const { measurementUnit } = storeToRefs(useMeasurementsStore());
+
 useShowScaleLine(olMap, {
   enabled: showScaleLine,
   measurementUnits: measurementUnit,
@@ -139,6 +137,7 @@ drawHistory();
 
 loadMapLayers();
 loadScenarioLayers();
+
 const extent = unitLayer.getSource()?.getExtent();
 if (extent && !unitLayer.getSource()?.isEmpty())
   olMap.getView().fit(extent, { padding: [10, 10, 10, 10] });
@@ -148,17 +147,21 @@ function toggleMoveUnitInteraction(event: ObjectEvent) {
   moveUnitInteraction.setActive(isUnitLayerVisible && moveUnitEnabled.value);
 }
 
+emit("map-ready", { olMap, featureSelectInteraction, unitSelectInteraction });
+
 watch(geo.everyVisibleUnit, () => {
   drawUnits();
   drawHistory();
   redrawSelectedUnits();
 });
 
-emit("map-ready", { olMap, featureSelectInteraction, unitSelectInteraction });
-
 watch([settingsStore, symbolSettings], () => {
   clearStyleCache();
   drawUnits();
+});
+
+watch([() => state.currentTime, doNotFilterLayers], (v) => {
+  loadScenarioLayers(false, !doNotFilterLayers.value);
 });
 
 onUnmounted(() => {

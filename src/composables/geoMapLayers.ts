@@ -1,6 +1,11 @@
 import { ScenarioMapLayer, ScenarioMapLayerType } from "@/types/scenarioGeoModels";
 import { computed } from "vue";
 
+export type LayerUpdateOptions = {
+  debounce?: boolean;
+  undoable?: boolean;
+};
+
 const layerTypeLabelMap: Record<ScenarioMapLayerType, string> = {
   XYZLayer: "XYZ layer",
   ImageLayer: "Image layer",

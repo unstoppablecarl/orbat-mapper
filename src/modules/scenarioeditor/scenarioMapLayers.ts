@@ -12,10 +12,11 @@ import {
 } from "@/types/scenarioGeoModels";
 import GeoImageLayer from "ol-ext/layer/GeoImage";
 import GeoImage from "ol-ext/source/GeoImage";
+import TransformInteraction from "ol-ext/interaction/Transform";
 import { fromLonLat, toLonLat, transformExtent } from "ol/proj";
 import { useEventBus } from "@vueuse/core";
 import { imageLayerAction } from "@/components/eventKeys";
-import { isEmpty } from "ol/extent";
+import { boundingExtent, isEmpty } from "ol/extent";
 import TileLayer from "ol/layer/Tile";
 import { TileJSON } from "ol/source";
 import { unByKey } from "ol/Observable";
@@ -27,6 +28,13 @@ import {
 } from "@/types/internalModels";
 import XYZ from "ol/source/XYZ";
 import { TGeo } from "@/scenariostore";
+import { onMounted, onUnmounted } from "vue";
+import VectorLayer from "ol/layer/Vector";
+import VectorSource from "ol/source/Vector";
+import { fromExtent } from "ol/geom/Polygon";
+import Feature from "ol/Feature";
+import { Polygon } from "ol/geom";
+import { Fill, Stroke, Style } from "ol/style";
 
 const layersMap = new WeakMap<OLMap, LayerGroup>();
 
@@ -37,7 +45,7 @@ export function useScenarioMapLayers(olMap: OLMap) {
   const mapLayersGroup = getOrCreateLayerGroup(olMap);
 
   const { onUndoRedo } = scn.store;
-
+  const { l } = useImageLayerInteraction(olMap);
   function initializeFromStore() {
     mapLayersGroup.getLayers().clear();
     scn.geo.mapLayers.value.forEach((mapLayer) => {
@@ -99,6 +107,12 @@ export function useScenarioMapLayers(olMap: OLMap) {
       });
     } else {
       newLayer.setVisible(!(data.isHidden ?? false));
+      const polygon = fromExtent(newLayer.getSource().getExtent());
+      polygon.rotate(
+        -newLayer.getSource().getRotation(),
+        newLayer.getSource().getCenter()
+      );
+      l.getSource().addFeature(new Feature(getPolygonfromImage(newLayer)));
     }
     mapLayersGroup.getLayers().push(newLayer);
   }
@@ -372,4 +386,40 @@ export function addMapLayer(
   }
 
   return newLayer;
+}
+
+function getPolygonfromImage(layer: any) {
+  const source = layer.getSource();
+  const center = source.getCenter();
+  const scale = source.getScale();
+  const width = source.getGeoImage().width * scale[0];
+  const height = source.getGeoImage().height * scale[1];
+  const p1 = [center[0] - width / 2, center[1] - height / 2];
+  const p2 = [center[0] + width / 2, center[1] + height / 2];
+  const extent = boundingExtent([p1, p2]);
+  const polygon = fromExtent(extent);
+  // The resulting polygon
+  polygon.rotate(-source.getRotation(), center);
+  return polygon;
+}
+
+function useImageLayerInteraction(olMap: OLMap) {
+  const l = new VectorLayer({
+    source: new VectorSource(),
+    style: new Style({
+      fill: new Fill({ color: "rgba(0, 0, 0, 0)" }),
+      stroke: new Stroke({ color: "rgb(238,3,3)", width: 2 }),
+    }),
+  });
+  const interaction = new TransformInteraction({ translateFeature: false, noFlip: true });
+  olMap.addInteraction(interaction);
+  olMap.addLayer(l);
+  onUnmounted(() => {
+    olMap.removeInteraction(interaction);
+  });
+  interaction.on(["translating", "rotating"], (e) => {
+    console.log(e);
+  });
+
+  return { l };
 }
